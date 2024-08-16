@@ -26,9 +26,11 @@ export default function Home() {
       }
       const data = await response.json();
       setResult(data);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error:", error);
-      setResult({ error: error.message || "An error occurred" });
+      setResult({
+        error: error instanceof Error ? error.message : "An error occurred",
+      });
     } finally {
       setIsLoading(false);
     }
