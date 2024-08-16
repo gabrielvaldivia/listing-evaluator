@@ -46,8 +46,9 @@ export async function POST(request: Request) {
     const score = parseInt(evaluation.match(/\d+/)?.[0] || '0');
 
     return NextResponse.json({ score, evaluation });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in POST /api/evaluate:', error);
-    return NextResponse.json({ error: 'An error occurred while processing the request', details: error.message }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return NextResponse.json({ error: 'An error occurred while processing the request', details: errorMessage }, { status: 500 });
   }
 }
