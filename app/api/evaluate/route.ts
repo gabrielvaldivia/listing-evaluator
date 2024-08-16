@@ -7,8 +7,10 @@ const openai = new OpenAI({
 });
 
 export async function POST(request: Request) {
+  console.log('API route hit');
   try {
     const { requirements, listingUrl } = await request.json();
+    console.log('Received data:', { requirements, listingUrl });
 
     // Scrape the listing
     const response = await fetch(listingUrl, {

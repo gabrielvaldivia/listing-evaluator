@@ -6,18 +6,32 @@ export default function Home() {
   const [requirements, setRequirements] = useState("");
   const [listingUrl, setListingUrl] = useState("");
   const [result, setResult] = useState<{
-    score: number;
-    evaluation: string;
+    score?: number;
+    evaluation?: string;
+    error?: string;
   } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleEvaluate = async () => {
-    const response = await fetch("/api/evaluate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ requirements, listingUrl }),
-    });
-    const data = await response.json();
-    setResult(data);
+    setIsLoading(true);
+    setResult(null);
+    try {
+      const response = await fetch("/api/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requirements, listingUrl }),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setResult(data);
+    } catch (error) {
+      console.error("Error:", error);
+      setResult({ error: error.message || "An error occurred" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -42,15 +56,22 @@ export default function Home() {
       <button
         className="bg-blue-500 text-white px-4 py-2 rounded"
         onClick={handleEvaluate}
+        disabled={isLoading}
       >
-        Evaluate
+        {isLoading ? "Evaluating..." : "Evaluate"}
       </button>
 
       {result && (
         <div className="mt-4">
           <h2 className="text-xl font-semibold">Results:</h2>
-          <p>Score: {result.score}</p>
-          <p>Evaluation: {result.evaluation}</p>
+          {result.error ? (
+            <p className="text-red-500">Error: {result.error}</p>
+          ) : (
+            <>
+              <p>Score: {result.score}</p>
+              <p>Evaluation: {result.evaluation}</p>
+            </>
+          )}
         </div>
       )}
     </main>
