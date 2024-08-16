@@ -48,6 +48,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ score, evaluation });
   } catch (error) {
     console.error('Error in POST /api/evaluate:', error);
-    return NextResponse.json({ error: 'An error occurred while processing the request' }, { status: 500 });
+    return NextResponse.json({ error: 'An error occurred while processing the request', details: error.message }, { status: 500 });
   }
 }

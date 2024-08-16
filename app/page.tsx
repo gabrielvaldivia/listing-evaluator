@@ -22,7 +22,8 @@ export default function Home() {
         body: JSON.stringify({ requirements, listingUrl }),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const err = await response.json();
+        throw err;
       }
       const data = await response.json();
       setResult(data);
