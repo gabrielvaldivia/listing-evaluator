@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { JSDOM } from 'jsdom';
 import OpenAI from 'openai';
 
-const openai = new OpenAI();
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function POST(request: Request) {
   const { requirements, listingUrl } = await request.json();
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
     max_tokens: 200,
   });
 
-  const evaluation = completion.data.choices[0].message.content?.trim() || '';
+  const evaluation = completion.choices[0].message.content?.trim() || '';
   const score = parseInt(evaluation.match(/\d+/)?.[0] || '0');
 
   return NextResponse.json({ score, evaluation });
